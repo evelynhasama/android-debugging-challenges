@@ -15,11 +15,13 @@ import com.bumptech.glide.Glide;
 import com.codepath.debuggingchallenges.R;
 import com.codepath.debuggingchallenges.models.Movie;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
-    private List<Movie> movies;
+    ArrayList<Movie> movies;
+    Context context;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         // only needed because we need to set the background color
@@ -38,15 +40,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             tvRating = itemView.findViewById(R.id.tvRating);
             ivPoster = itemView.findViewById(R.id.ivPoster);
         }
+
     }
 
-    public MoviesAdapter(List<Movie> movies) {
+    public MoviesAdapter(Context context, ArrayList<Movie> movies) {
         this.movies = movies;
+        this.context = context;
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return movies.size();
     }
 
     @NonNull
@@ -76,6 +80,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         if (movieRating > 6) {
             viewHolder.view.setBackgroundColor(Color.GREEN);
+        } else {
+            viewHolder.view.setBackgroundColor(Color.WHITE);
         }
 
         String ratingText = String.format(resources.getString(R.string.rating), movieRating);
@@ -83,6 +89,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         Glide.with(viewHolder.ivPoster.getContext()).load(movie.getPosterUrl()).into(
                 viewHolder.ivPoster);
+
 
     }
 }

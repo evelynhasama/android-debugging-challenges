@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
@@ -14,6 +15,7 @@ import com.codepath.debuggingchallenges.models.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -33,25 +35,31 @@ public class MoviesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movies);
         rvMovies = findViewById(R.id.rvMovies);
 
+        movies = new ArrayList<Movie>();
         // Create the adapter to convert the array to views
-        MoviesAdapter adapter = new MoviesAdapter(movies);
+        adapter = new MoviesAdapter(MoviesActivity.this, movies);
 
         // Attach the adapter to a ListView
         rvMovies.setAdapter(adapter);
 
+        rvMovies.setLayoutManager(new LinearLayoutManager(MoviesActivity.this));
         fetchMovies();
     }
 
 
     private void fetchMovies() {
-        String url = " https://api.themoviedb.org/3/movie/now_playing?api_key=";
+        String url = " https://api.themoviedb.org/3/movie/now_playing?api_key=a71c0acdb84c7fdef6c324846d8ec1f1";
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, null, new JsonHttpResponseHandler() {
+        client.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON response) {
+                JSONObject jsonObject = response.jsonObject;
                 try {
-                    JSONArray moviesJson = response.jsonObject.getJSONArray("results");
-                    movies = Movie.fromJSONArray(moviesJson);
+                    JSONArray moviesJson = jsonObject.getJSONArray("results");
+                    movies.addAll(Movie.fromJSONArray(moviesJson));
+                    Log.d("MoviesActivityDebug", "number movies adapter: " + adapter.getItemCount());
+                    adapter.notifyDataSetChanged();
+                    Log.d("MoviesActivityDebug", "movies size: " + movies.size());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
